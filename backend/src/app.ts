@@ -5,6 +5,7 @@ import morgan from 'morgan';
 
 import { authRouter } from './modules/auth/auth.routes.js';
 import { assetsRouter } from './modules/assets/asset.routes.js';
+import { dashboardRouter } from './modules/dashboard/dashboard.routes.js';
 import { devicesRouter } from './modules/assets/device.routes.js';
 import { exportsRouter } from './modules/exports/export.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
@@ -48,6 +49,7 @@ export const createApp = () => {
   app.use('/api/panels', panelsRouter);
   app.use('/api/assets', assetsRouter);
   app.use('/api/devices', devicesRouter);
+  app.use('/api/dashboard', dashboardRouter);
   app.use('/api/maintenance', maintenanceRouter);
   app.use('/api/imports', importsRouter);
   app.use('/api/exports', exportsRouter);

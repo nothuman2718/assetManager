@@ -1,106 +1,49 @@
-import { Activity, LayoutDashboard, Users } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Activity, Users } from 'lucide-react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { AppShell } from './app/AppShell'
+import { Badge, Card, PageHeader } from './components/ui'
 import { LoginPage } from './features/auth/LoginPage'
 import { ProtectedRoute } from './features/auth/ProtectedRoute'
-import { useAuth } from './features/auth/AuthContext'
 import { AssetDetailPage } from './features/assets/AssetDetailPage'
 import { AssetsPage } from './features/assets/AssetsPage'
 import { DevicesPage } from './features/assets/DevicesPage'
+import { DashboardPage } from './features/dashboard/DashboardPage'
 import { HierarchyPage } from './features/hierarchy/HierarchyPage'
 import { MaintenancePage } from './features/maintenance/MaintenancePage'
-import { maintenanceApi } from './features/maintenance/api'
-
-const DashboardPage = () => {
-  const { token, user } = useAuth()
-  const [upcomingCount, setUpcomingCount] = useState(0)
-  const [overdueCount, setOverdueCount] = useState(0)
-
-  useEffect(() => {
-    if (!token) {
-      return
-    }
-
-    const loadMaintenanceSummary = async () => {
-      const [upcoming, overdue] = await Promise.all([
-        maintenanceApi.upcoming(token, 30),
-        maintenanceApi.overdue(token),
-      ])
-      setUpcomingCount(upcoming.length)
-      setOverdueCount(overdue.length)
-    }
-
-    void loadMaintenanceSummary()
-  }, [token])
-
-  return (
-    <section className="max-w-4xl rounded-lg border border-slate-200 bg-white p-7 shadow-sm">
-      <div className="mb-5 flex items-center gap-4">
-        <LayoutDashboard className="h-8 w-8 text-teal-700" aria-hidden="true" />
-        <div>
-          <p className="mb-1 text-xs font-bold uppercase text-slate-500">
-            Phase 2 auth ready
-          </p>
-          <h1 className="text-3xl font-bold text-slate-950">
-            Welcome, {user?.name}
-          </h1>
-        </div>
-      </div>
-      <p className="max-w-2xl leading-7 text-slate-600">
-        Authentication, protected routes, hierarchy, assets, devices, and maintenance workflows are active.
-      </p>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p className="text-sm font-semibold text-slate-500">Upcoming maintenance</p>
-          <p className="mt-2 text-3xl font-bold text-slate-950">{upcomingCount}</p>
-        </div>
-        <div className="rounded-lg border border-red-100 bg-red-50 p-4">
-          <p className="text-sm font-semibold text-red-700">Overdue maintenance</p>
-          <p className="mt-2 text-3xl font-bold text-red-700">{overdueCount}</p>
-        </div>
-      </div>
-    </section>
-  )
-}
+import { SettingsPage } from './features/settings/SettingsPage'
 
 const HealthPage = () => (
-  <section className="max-w-4xl rounded-lg border border-slate-200 bg-white p-7 shadow-sm">
-    <div className="mb-5 flex items-center gap-4">
-      <Activity className="h-8 w-8 text-teal-700" aria-hidden="true" />
-      <div>
-        <p className="mb-1 text-xs font-bold uppercase text-slate-500">
-          Backend contract
-        </p>
-        <h1 className="text-3xl font-bold text-slate-950">Health endpoint</h1>
+  <section className="space-y-6">
+    <PageHeader
+      eyebrow="Backend contract"
+      title="Health endpoint"
+      description="The backend health route verifies that the API is reachable before feature modules are used."
+      action={<Badge tone="teal">GET /api/health</Badge>}
+    />
+    <Card className="p-5">
+      <div className="flex items-center gap-3">
+        <Activity className="h-6 w-6 text-teal-700" aria-hidden="true" />
+        <code className="rounded bg-slate-100 px-2 py-1 text-sm font-semibold text-slate-950">GET /api/health</code>
       </div>
-    </div>
-    <p className="max-w-2xl leading-7 text-slate-600">
-      The backend exposes{' '}
-      <code className="rounded bg-slate-100 px-1.5 py-1 text-slate-950">
-        GET /api/health
-      </code>{' '}
-      so setup can be verified before feature modules are added.
-    </p>
+    </Card>
   </section>
 )
 
 const UsersPage = () => (
-  <section className="max-w-4xl rounded-lg border border-slate-200 bg-white p-7 shadow-sm">
-    <div className="mb-5 flex items-center gap-4">
-      <Users className="h-8 w-8 text-teal-700" aria-hidden="true" />
-      <div>
-        <p className="mb-1 text-xs font-bold uppercase text-slate-500">
-          Admin only
-        </p>
-        <h1 className="text-3xl font-bold text-slate-950">Users</h1>
+  <section className="space-y-6">
+    <PageHeader
+      eyebrow="Admin only"
+      title="Users"
+      description="The backend user management route is protected for Admin users. Full user management screens can expand from this placeholder later."
+      action={<Badge tone="teal">Admin</Badge>}
+    />
+    <Card className="p-5">
+      <div className="flex items-center gap-3">
+        <Users className="h-6 w-6 text-teal-700" aria-hidden="true" />
+        <p className="text-sm text-slate-600">User management placeholder</p>
       </div>
-    </div>
-    <p className="max-w-2xl leading-7 text-slate-600">
-      The backend user management route is protected for Admin users. Full user
-      management screens can expand from this placeholder later.
-    </p>
+    </Card>
   </section>
 )
 
@@ -119,6 +62,7 @@ function App() {
           <Route path="/assets/:id" element={<AssetDetailPage />} />
           <Route path="/devices" element={<DevicesPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
     </Routes>

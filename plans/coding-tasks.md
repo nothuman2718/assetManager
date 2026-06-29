@@ -350,60 +350,78 @@ Phase 6 verification notes:
 
 ### 7.1 Dashboard Backend
 
-- [ ] Add summary metrics endpoint.
-- [ ] Add assets-by-category endpoint.
-- [ ] Add device-status endpoint.
-- [ ] Add maintenance summary endpoint.
-- [ ] Add recent assets endpoint.
+- [x] Add summary metrics endpoint.
+- [x] Add assets-by-category endpoint.
+- [x] Add device-status endpoint.
+- [x] Add maintenance summary endpoint.
+- [x] Add recent assets endpoint.
 
 Test after completion:
 
-- [ ] Confirm dashboard metrics match database records.
-- [ ] Confirm empty database returns zero counts, not errors.
-- [ ] Confirm role permissions allow all authenticated users to view dashboard.
+- [x] Confirm dashboard metrics match database records.
+- [x] Confirm empty database returns zero counts, not errors.
+- [x] Confirm role permissions allow all authenticated users to view dashboard.
 
 ### 7.2 Dashboard Frontend
 
-- [ ] Add dashboard page.
-- [ ] Add summary cards.
-- [ ] Add charts.
-- [ ] Add recent assets list.
-- [ ] Add maintenance due section.
+- [x] Add dashboard page.
+- [x] Add summary cards.
+- [x] Add charts.
+- [x] Add recent assets list.
+- [x] Add maintenance due section.
 
 Test after completion:
 
-- [ ] Dashboard renders with empty state.
-- [ ] Dashboard updates after creating assets and devices.
-- [ ] Charts render without layout issues.
+- [x] Dashboard renders with empty state.
+- [x] Dashboard updates after creating assets and devices.
+- [x] Charts render without layout issues.
+
+Phase 7 verification notes:
+
+- [x] `npm run typecheck` passed in `backend/`.
+- [x] `npm run build` passed in `backend/`.
+- [x] `npm test` passed in `backend/` with socket/database permissions.
+- [x] `npm run typecheck` passed in `frontend/`.
+- [x] `npm run lint` passed in `frontend/` with existing auth fast-refresh warning.
+- [x] `npm run build` passed in `frontend/` with a Vite chunk-size warning from chart dependencies.
 
 ## Phase 8: Frontend Completion and Polish
 
 ### 8.1 Shared UI Components
 
-- [ ] Add app layout with sidebar and top bar.
-- [ ] Add reusable table component.
-- [ ] Add reusable form controls.
-- [ ] Add reusable modal or side panel.
-- [ ] Add badges, buttons, loading states, empty states, and error states.
+- [x] Add app layout with sidebar and top bar.
+- [x] Add reusable table component.
+- [x] Add reusable form controls.
+- [x] Add reusable modal or side panel.
+- [x] Add badges, buttons, loading states, empty states, and error states.
 
 Test after completion:
 
-- [ ] Every main page uses consistent layout.
-- [ ] Loading, empty, and error states are visible where needed.
-- [ ] Text does not overflow common UI controls.
+- [x] Every main page uses consistent layout.
+- [x] Loading, empty, and error states are visible where needed.
+- [x] Text does not overflow common UI controls.
 
 ### 8.2 Navigation and Role Experience
 
-- [ ] Add final navigation items.
-- [ ] Hide disallowed actions by role.
-- [ ] Keep backend as the source of truth for permissions.
-- [ ] Add settings/profile placeholder if final settings are not implemented yet.
+- [x] Add final navigation items.
+- [x] Hide disallowed actions by role.
+- [x] Keep backend as the source of truth for permissions.
+- [x] Add settings/profile placeholder if final settings are not implemented yet.
 
 Test after completion:
 
-- [ ] Admin sees all management options.
-- [ ] Engineer sees configuration workflows.
-- [ ] Operator sees read-only workflows.
+- [x] Admin sees all management options.
+- [x] Engineer sees configuration workflows.
+- [x] Operator sees read-only workflows.
+
+Phase 8 verification notes:
+
+- [x] Added shared UI primitives in `frontend/src/components/ui.tsx`.
+- [x] Added a top bar, active navigation styling, and role-aware final navigation.
+- [x] Added `/settings` profile and permissions placeholder.
+- [x] `npm run typecheck` passed in `frontend/`.
+- [x] `npm run lint` passed in `frontend/` with existing auth fast-refresh warning.
+- [x] `npm run build` passed in `frontend/` with a Vite chunk-size warning from chart dependencies.
 
 ## Phase 9: Testing
 
