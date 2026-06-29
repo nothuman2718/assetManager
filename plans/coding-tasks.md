@@ -185,47 +185,62 @@ Test after completion:
 
 ### 4.1 Asset Backend
 
-- [ ] Create asset model.
-- [ ] Add asset CRUD endpoints.
-- [ ] Add search, filters, sorting, and pagination.
-- [ ] Add hierarchy assignment fields.
-- [ ] Add asset status handling.
+- [x] Create asset model.
+- [x] Add asset CRUD endpoints.
+- [x] Add search, filters, sorting, and pagination.
+- [x] Add hierarchy assignment fields.
+- [x] Add asset status handling.
 
 Test after completion:
 
-- [ ] Create, update, list, view, and deactivate assets.
-- [ ] Filter assets by category, status, plant, and panel.
-- [ ] Search assets by name, manufacturer, model, and serial number.
+- [x] Create, update, list, view, and deactivate assets.
+- [x] Filter assets by category, status, plant, and panel.
+- [x] Search assets by name, manufacturer, model, and serial number.
 
 ### 4.2 Device Backend
 
-- [ ] Create device configuration model.
-- [ ] Link each device configuration to an asset.
-- [ ] Add fields for IP address, port, protocol, Modbus address, communication type, polling interval, and status.
-- [ ] Add device CRUD endpoints.
-- [ ] Add simulated status updates.
+- [x] Create device configuration model.
+- [x] Link each device configuration to an asset.
+- [x] Add fields for IP address, port, protocol, Modbus address, communication type, polling interval, and status.
+- [x] Add device CRUD endpoints.
+- [x] Add simulated status updates.
 
 Test after completion:
 
-- [ ] Create a device configuration for an asset.
-- [ ] Reject invalid protocol, port, and polling interval values.
-- [ ] Change device status and confirm it appears in list responses.
+- [x] Create a device configuration for an asset.
+- [x] Reject invalid protocol, port, and polling interval values.
+- [x] Change device status and confirm it appears in list responses.
 
 ### 4.3 Frontend Assets and Devices
 
-- [ ] Add assets list page.
-- [ ] Add asset form.
-- [ ] Add asset details view.
-- [ ] Add devices list page.
-- [ ] Add device configuration form.
-- [ ] Add status badges.
+- [x] Add assets list page.
+- [x] Add asset form.
+- [x] Add asset details view.
+- [x] Add devices list page.
+- [x] Add device configuration form.
+- [x] Add status badges.
 
 Test after completion:
 
-- [ ] Manage assets from UI.
-- [ ] Manage devices from UI.
-- [ ] Confirm filters and search work from UI.
-- [ ] Confirm role restrictions in UI.
+- [x] Manage assets from UI.
+- [x] Manage devices from UI.
+- [x] Confirm filters and search work from UI.
+- [x] Confirm role restrictions in UI.
+
+### 4.4 Phase 4 Follow-up Questions
+
+- [x] Capture open questions for the next implementation phase.
+
+Open questions for Phase 5:
+
+- [ ] Should maintenance records be tied to assets only, or should they also be visible from hierarchy nodes?
+they shoudl be visbile from hierarchy notes also yes thats correct
+- [ ] Do we want maintenance planning to use simple date-based overdue logic, or should it include asset criticality and SLA thresholds?
+simple date based overdue logic thats it
+- [ ] Should Operators be able to view maintenance history while Engineers/Admins manage it?
+yes they should be able to see the maintenance history
+- [ ] Should maintenance reminders be shown in the dashboard as a lightweight summary card?
+yessss thye should be shown
 
 ## Phase 5: Maintenance
 
@@ -443,6 +458,14 @@ seperate tree end points would be good
 opertors can view that it, not create or edit it, they shoukd not be blocked
 - Would you like the frontend hierarchy views to use the same list/detail/create/edit pattern as the rest of the app, or should the first pass be a simpler tree-focused screen with inline create forms?
 as rest of the app, but tree focused screen will be good
+
+## Phase 4 Implementation Notes and Doubts
+
+- For the first pass of assets and devices, should device configuration screens be separate from the asset detail page or embedded as a section within asset detail?
+to keep it simple embedded but configurable completely
+separate device section inside asset detail would be better if you feel this is good then go for it ..
+- Should device status be updated only through explicit admin/engineer actions, or should the API expose a lightweight simulated status update endpoint for demo purposes?
+lightweight simulated status update endpoint would be good for demo, but just for the demo ideally only adminand enginner should be do, for the demo yeah
 
 ## Resolved Decisions
 

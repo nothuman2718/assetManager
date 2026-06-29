@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 import { authRouter } from './modules/auth/auth.routes.js';
+import { assetsRouter } from './modules/assets/asset.routes.js';
+import { devicesRouter } from './modules/assets/device.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
 import { buildingsRouter } from './modules/hierarchy/building.routes.js';
 import { departmentsRouter } from './modules/hierarchy/department.routes.js';
@@ -41,6 +43,8 @@ export const createApp = () => {
   app.use('/api/buildings', buildingsRouter);
   app.use('/api/departments', departmentsRouter);
   app.use('/api/panels', panelsRouter);
+  app.use('/api/assets', assetsRouter);
+  app.use('/api/devices', devicesRouter);
   app.use('/api/hierarchy', hierarchyTreeRouter);
 
   app.use((_request, response) => {

@@ -5,6 +5,8 @@ import { AppShell } from './app/AppShell'
 import { LoginPage } from './features/auth/LoginPage'
 import { ProtectedRoute } from './features/auth/ProtectedRoute'
 import { useAuth } from './features/auth/AuthContext'
+import { AssetDetailPage } from './features/assets/AssetDetailPage'
+import { AssetsPage } from './features/assets/AssetsPage'
 import { HierarchyPage } from './features/hierarchy/HierarchyPage'
 
 const DashboardPage = () => {
@@ -82,6 +84,8 @@ function App() {
           <Route path="/health" element={<HealthPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/hierarchy" element={<HierarchyPage />} />
+          <Route path="/assets" element={<AssetsPage />} />
+          <Route path="/assets/:id" element={<AssetDetailPage />} />
         </Route>
       </Route>
     </Routes>

@@ -7,7 +7,7 @@
 - Review docs and convert approved scope into coding tasks.
 
 ## Phase 1: Project Setup
-
+blocked
 - Initialize the repository structure.
 - Set up React Vite TypeScript frontend.
 - Set up Node.js Express TypeScript backend.
