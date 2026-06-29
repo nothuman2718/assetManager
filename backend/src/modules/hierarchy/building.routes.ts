@@ -101,13 +101,13 @@ buildingsRouter.post(
 buildingsRouter.get(
   '/:id',
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid building id' });
       return;
     }
 
     const building = await BuildingModel.findOne({
-      _id: request.params.id,
+      _id: String(request.params.id),
       status: { $ne: 'deleted' },
     }).exec();
 
@@ -124,7 +124,7 @@ buildingsRouter.patch(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid building id' });
       return;
     }
@@ -160,7 +160,7 @@ buildingsRouter.patch(
     }
 
     const building = await BuildingModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: updates },
       { new: true },
     ).exec();
@@ -178,13 +178,13 @@ buildingsRouter.delete(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid building id' });
       return;
     }
 
     const building = await BuildingModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: { status: 'deleted' } },
       { new: true },
     ).exec();

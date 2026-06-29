@@ -1,5 +1,5 @@
 import { Plus, RefreshCcw, Wrench } from 'lucide-react'
-import { useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAuth } from '../auth/AuthContext'
@@ -34,7 +34,7 @@ export const AssetDetailPage = () => {
     maintenance: 'bg-amber-50 text-amber-700',
   }
 
-  const loadAssetDetails = async () => {
+  const loadAssetDetails = useCallback(async () => {
     if (!token || !id) {
       return
     }
@@ -44,7 +44,7 @@ export const AssetDetailPage = () => {
       setError(null)
       const [assetData, deviceData] = await Promise.all([
         assetsApi.getAsset(token, id),
-        assetsApi.listDevices(token, id),
+        assetsApi.listDevices(token, { assetId: id }),
       ])
       setAsset(assetData)
       setDevices(Array.isArray(deviceData) ? deviceData : [])
@@ -53,11 +53,11 @@ export const AssetDetailPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id, token])
 
   useEffect(() => {
     void loadAssetDetails()
-  }, [id, token])
+  }, [loadAssetDetails])
 
   const handleCreateDevice = async (event: FormEvent) => {
     event.preventDefault()

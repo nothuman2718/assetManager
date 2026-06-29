@@ -1,8 +1,10 @@
-import { Box, Plus, Search } from 'lucide-react'
-import { useEffect, useState, type FormEvent } from 'react'
+import { Box, DatabaseZap, Plus, Search } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useAuth } from '../auth/AuthContext'
+import { hierarchyApi } from '../hierarchy/api'
+import type { PlantTree } from '../hierarchy/types'
 import { assetsApi } from './api'
 import type { Asset } from './types'
 
@@ -31,13 +33,37 @@ const initialForm: AssetForm = {
   buildingId: '',
   departmentId: '',
   panelId: '',
-  status: 'active' as const,
+  status: 'active',
+}
+
+const createSampleAsset = (tree: PlantTree[]): AssetForm => {
+  const plant = tree[0]
+  const building = plant?.buildings[0]
+  const department = building?.departments[0]
+  const panel = department?.panels[0]
+  const suffix = Date.now().toString().slice(-5)
+
+  return {
+    name: 'Main Incomer Energy Meter',
+    code: `ASSET-${suffix}`,
+    category: 'Energy Meter',
+    manufacturer: 'Schneider Electric',
+    model: 'PM5560',
+    serialNumber: `SN-${suffix}`,
+    plantId: plant?.id ?? '',
+    buildingId: building?.id ?? '',
+    departmentId: department?.id ?? '',
+    panelId: panel?.id ?? '',
+    status: 'active',
+  }
 }
 
 export const AssetsPage = () => {
   const { token, user } = useAuth()
   const [assets, setAssets] = useState<Asset[]>([])
+  const [tree, setTree] = useState<PlantTree[]>([])
   const [loading, setLoading] = useState(true)
+  const [hierarchyLoading, setHierarchyLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
@@ -51,7 +77,29 @@ export const AssetsPage = () => {
     maintenance: 'bg-amber-50 text-amber-700',
   }
 
-  const loadAssets = async () => {
+  const buildings = useMemo(
+    () =>
+      tree
+        .filter((plant) => !form.plantId || plant.id === form.plantId)
+        .flatMap((plant) => plant.buildings),
+    [form.plantId, tree],
+  )
+  const departments = useMemo(
+    () =>
+      buildings
+        .filter((building) => !form.buildingId || building.id === form.buildingId)
+        .flatMap((building) => building.departments),
+    [buildings, form.buildingId],
+  )
+  const panels = useMemo(
+    () =>
+      departments
+        .filter((department) => !form.departmentId || department.id === form.departmentId)
+        .flatMap((department) => department.panels),
+    [departments, form.departmentId],
+  )
+
+  const loadAssets = useCallback(async () => {
     if (!token) {
       return
     }
@@ -66,15 +114,31 @@ export const AssetsPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [category, search, status, token])
 
-  useEffect(() => {
-    void loadAssets()
+  const loadHierarchy = useCallback(async () => {
+    if (!token) {
+      return
+    }
+
+    try {
+      setHierarchyLoading(true)
+      const response = await hierarchyApi.getTree(token)
+      setTree(Array.isArray(response) ? response : [])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load hierarchy options')
+    } finally {
+      setHierarchyLoading(false)
+    }
   }, [token])
 
   useEffect(() => {
+    void loadHierarchy()
+  }, [loadHierarchy])
+
+  useEffect(() => {
     void loadAssets()
-  }, [search, category, status])
+  }, [loadAssets])
 
   const handleCreateAsset = async (event: FormEvent) => {
     event.preventDefault()
@@ -172,11 +236,9 @@ export const AssetsPage = () => {
                       View details
                     </Link>
                   </div>
-                  <p className="mt-2 text-sm text-slate-600">
-                    Serial: {asset.serialNumber}
-                  </p>
-                  <p className="mt-2 text-sm text-slate-600">
-                    Hierarchy: {asset.plantId ?? '—'} / {asset.buildingId ?? '—'} / {asset.departmentId ?? '—'} / {asset.panelId ?? '—'}
+                  <p className="mt-2 text-sm text-slate-600">Serial: {asset.serialNumber}</p>
+                  <p className="mt-2 break-all text-sm text-slate-600">
+                    Hierarchy: {asset.plantId ?? '-'} / {asset.buildingId ?? '-'} / {asset.departmentId ?? '-'} / {asset.panelId ?? '-'}
                   </p>
                 </div>
               ))}
@@ -191,9 +253,20 @@ export const AssetsPage = () => {
             </div>
           ) : null}
 
-          <div className="mb-4 flex items-center gap-2">
-            <Plus className="h-5 w-5 text-teal-700" />
-            <h2 className="text-xl font-semibold text-slate-900">Create asset</h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-teal-700" />
+              <h2 className="text-xl font-semibold text-slate-900">Create asset</h2>
+            </div>
+            <button
+              className="inline-flex min-h-10 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              type="button"
+              onClick={() => setForm(createSampleAsset(tree))}
+              disabled={!canManageAssets}
+            >
+              <DatabaseZap className="h-4 w-4" />
+              Add sample data
+            </button>
           </div>
 
           <form className="grid gap-3" onSubmit={handleCreateAsset}>
@@ -204,12 +277,52 @@ export const AssetsPage = () => {
             <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Model" value={form.model} onChange={(event) => setForm((current) => ({ ...current, model: event.target.value }))} disabled={!canManageAssets} />
             <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Serial number" value={form.serialNumber} onChange={(event) => setForm((current) => ({ ...current, serialNumber: event.target.value }))} disabled={!canManageAssets} />
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Plant id" value={form.plantId} onChange={(event) => setForm((current) => ({ ...current, plantId: event.target.value }))} disabled={!canManageAssets} />
-              <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Building id" value={form.buildingId} onChange={(event) => setForm((current) => ({ ...current, buildingId: event.target.value }))} disabled={!canManageAssets} />
+              <select
+                className="rounded-md border border-slate-300 px-3 py-2"
+                value={form.plantId}
+                onChange={(event) => setForm((current) => ({ ...current, plantId: event.target.value, buildingId: '', departmentId: '', panelId: '' }))}
+                disabled={!canManageAssets || hierarchyLoading}
+              >
+                <option value="">Select plant</option>
+                {tree.map((plant) => (
+                  <option key={plant.id} value={plant.id}>{plant.name} ({plant.code})</option>
+                ))}
+              </select>
+              <select
+                className="rounded-md border border-slate-300 px-3 py-2"
+                value={form.buildingId}
+                onChange={(event) => setForm((current) => ({ ...current, buildingId: event.target.value, departmentId: '', panelId: '' }))}
+                disabled={!canManageAssets || hierarchyLoading}
+              >
+                <option value="">Select building</option>
+                {buildings.map((building) => (
+                  <option key={building.id} value={building.id}>{building.name} ({building.code})</option>
+                ))}
+              </select>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Department id" value={form.departmentId} onChange={(event) => setForm((current) => ({ ...current, departmentId: event.target.value }))} disabled={!canManageAssets} />
-              <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Panel id" value={form.panelId} onChange={(event) => setForm((current) => ({ ...current, panelId: event.target.value }))} disabled={!canManageAssets} />
+              <select
+                className="rounded-md border border-slate-300 px-3 py-2"
+                value={form.departmentId}
+                onChange={(event) => setForm((current) => ({ ...current, departmentId: event.target.value, panelId: '' }))}
+                disabled={!canManageAssets || hierarchyLoading}
+              >
+                <option value="">Select department</option>
+                {departments.map((department) => (
+                  <option key={department.id} value={department.id}>{department.name} ({department.code})</option>
+                ))}
+              </select>
+              <select
+                className="rounded-md border border-slate-300 px-3 py-2"
+                value={form.panelId}
+                onChange={(event) => setForm((current) => ({ ...current, panelId: event.target.value }))}
+                disabled={!canManageAssets || hierarchyLoading}
+              >
+                <option value="">Select panel</option>
+                {panels.map((panel) => (
+                  <option key={panel.id} value={panel.id}>{panel.name} ({panel.code})</option>
+                ))}
+              </select>
             </div>
             <select className="rounded-md border border-slate-300 px-3 py-2" value={form.status} onChange={(event) => setForm((current) => ({ ...current, status: event.target.value as AssetForm['status'] }))} disabled={!canManageAssets}>
               <option value="active">Active</option>

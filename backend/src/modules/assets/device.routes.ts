@@ -111,12 +111,12 @@ devicesRouter.post(
 devicesRouter.get(
   '/:id',
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid device id' });
       return;
     }
 
-    const device = await DeviceModel.findById(request.params.id).exec();
+    const device = await DeviceModel.findById(String(request.params.id)).exec();
 
     if (!device) {
       response.status(404).json({ message: 'Device not found' });
@@ -131,7 +131,7 @@ devicesRouter.patch(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid device id' });
       return;
     }
@@ -179,7 +179,7 @@ devicesRouter.patch(
       updates.status = payload.status;
     }
 
-    const device = await DeviceModel.findByIdAndUpdate(request.params.id, { $set: updates }, { new: true }).exec();
+    const device = await DeviceModel.findByIdAndUpdate(String(request.params.id), { $set: updates }, { new: true }).exec();
 
     if (!device) {
       response.status(404).json({ message: 'Device not found' });
@@ -194,13 +194,13 @@ devicesRouter.post(
   '/:id/simulate-status',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid device id' });
       return;
     }
 
     const nextStatuses: Array<'online' | 'offline' | 'maintenance' | 'disabled'> = ['online', 'offline', 'maintenance', 'disabled'];
-    const device = await DeviceModel.findById(request.params.id).exec();
+    const device = await DeviceModel.findById(String(request.params.id)).exec();
 
     if (!device) {
       response.status(404).json({ message: 'Device not found' });
@@ -211,7 +211,7 @@ devicesRouter.post(
     const nextStatus = nextStatuses[(currentIndex + 1) % nextStatuses.length];
 
     const updatedDevice = await DeviceModel.findByIdAndUpdate(
-      request.params.id,
+      String(request.params.id),
       { $set: { status: nextStatus } },
       { new: true },
     ).exec();
@@ -224,12 +224,12 @@ devicesRouter.delete(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid device id' });
       return;
     }
 
-    const device = await DeviceModel.findByIdAndDelete(request.params.id).exec();
+    const device = await DeviceModel.findByIdAndDelete(String(request.params.id)).exec();
 
     if (!device) {
       response.status(404).json({ message: 'Device not found' });

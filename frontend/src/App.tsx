@@ -7,6 +7,7 @@ import { ProtectedRoute } from './features/auth/ProtectedRoute'
 import { useAuth } from './features/auth/AuthContext'
 import { AssetDetailPage } from './features/assets/AssetDetailPage'
 import { AssetsPage } from './features/assets/AssetsPage'
+import { DevicesPage } from './features/assets/DevicesPage'
 import { HierarchyPage } from './features/hierarchy/HierarchyPage'
 
 const DashboardPage = () => {
@@ -86,6 +87,7 @@ function App() {
           <Route path="/hierarchy" element={<HierarchyPage />} />
           <Route path="/assets" element={<AssetsPage />} />
           <Route path="/assets/:id" element={<AssetDetailPage />} />
+          <Route path="/devices" element={<DevicesPage />} />
         </Route>
       </Route>
     </Routes>

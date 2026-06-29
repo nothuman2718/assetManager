@@ -80,13 +80,13 @@ plantsRouter.post(
 plantsRouter.get(
   '/:id',
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid plant id' });
       return;
     }
 
     const plant = await PlantModel.findOne({
-      _id: request.params.id,
+      _id: String(request.params.id),
       status: { $ne: 'deleted' },
     }).exec();
 
@@ -103,7 +103,7 @@ plantsRouter.patch(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid plant id' });
       return;
     }
@@ -124,7 +124,7 @@ plantsRouter.patch(
     }
 
     const plant = await PlantModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: updates },
       { new: true },
     ).exec();
@@ -142,13 +142,13 @@ plantsRouter.delete(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid plant id' });
       return;
     }
 
     const plant = await PlantModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: { status: 'deleted' } },
       { new: true },
     ).exec();

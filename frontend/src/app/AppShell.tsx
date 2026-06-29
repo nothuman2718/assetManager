@@ -1,4 +1,4 @@
-import { Boxes, LayoutDashboard, LogOut, ShieldCheck, Trees, Users, Wrench } from 'lucide-react'
+import { Boxes, Cpu, LayoutDashboard, LogOut, ShieldCheck, Trees, Users, Wrench } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 
 import { useAuth } from '../features/auth/AuthContext'
@@ -10,6 +10,7 @@ export const AppShell = () => {
     { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
     { label: 'Hierarchy', to: '/hierarchy', icon: Trees },
     { label: 'Assets', to: '/assets', icon: Wrench },
+    { label: 'Devices', to: '/devices', icon: Cpu },
     { label: 'API Health', to: '/health', icon: ShieldCheck },
     ...(user?.role === 'Admin'
       ? [{ label: 'Users', to: '/users', icon: Users }]

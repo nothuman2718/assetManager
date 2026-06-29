@@ -1,5 +1,5 @@
-import { Building2, Layers3, Network, Plus, Trees, Warehouse } from 'lucide-react'
-import { useEffect, useState, type FormEvent } from 'react'
+import { Building2, DatabaseZap, Layers3, Network, Plus, Trees, Warehouse } from 'lucide-react'
+import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { hierarchyApi } from './api'
 import type { Plant, PlantTree } from './types'
@@ -25,7 +25,7 @@ export const HierarchyPage = () => {
 
   const canManageHierarchy = user?.role !== 'Operator'
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!token) {
       return
     }
@@ -49,11 +49,56 @@ export const HierarchyPage = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedPlantId, token])
 
   useEffect(() => {
     void loadData()
-  }, [token])
+  }, [loadData])
+
+  const handleCreateSampleHierarchy = async () => {
+    if (!token) {
+      return
+    }
+
+    const suffix = Date.now().toString().slice(-5)
+
+    try {
+      setError(null)
+      const plant = await hierarchyApi.createPlant(token, {
+        name: 'Sample Manufacturing Plant',
+        code: `PLT-${suffix}`,
+      })
+      const building = await hierarchyApi.createBuilding(token, {
+        name: 'Main Utility Building',
+        code: `BLD-${suffix}`,
+        plantId: plant.id,
+      })
+      const department = await hierarchyApi.createDepartment(token, {
+        name: 'Electrical Distribution',
+        code: `DEP-${suffix}`,
+        buildingId: building.id,
+      })
+      const panel = await hierarchyApi.createPanel(token, {
+        name: 'Main LT Panel',
+        code: `PNL-${suffix}`,
+        departmentId: department.id,
+      })
+
+      setSelectedPlantId(plant.id)
+      setSelectedBuildingId(building.id)
+      setSelectedDepartmentId(department.id)
+      setPlantForm(initialPlantForm)
+      setBuildingForm(initialBuildingForm)
+      setDepartmentForm(initialDepartmentForm)
+      setPanelForm(initialPanelForm)
+      await loadData()
+      setSelectedPlantId(plant.id)
+      setSelectedBuildingId(building.id)
+      setSelectedDepartmentId(panel.departmentId)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create sample hierarchy')
+    }
+  }
 
   const handleCreatePlant = async (event: FormEvent) => {
     event.preventDefault()
@@ -138,9 +183,20 @@ export const HierarchyPage = () => {
             {canManageHierarchy ? 'Create and manage' : 'View only access'}
           </div>
         </div>
-        <p className="mt-4 max-w-3xl text-slate-600">
-          Manage plants, buildings, departments, and panels from a tree-focused workspace with the same app styling and permissions as the rest of the product.
-        </p>
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+          <p className="max-w-3xl text-slate-600">
+            Manage plants, buildings, departments, and panels from a tree-focused workspace with the same app styling and permissions as the rest of the product.
+          </p>
+          <button
+            className="inline-flex min-h-10 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            type="button"
+            onClick={() => void handleCreateSampleHierarchy()}
+            disabled={!canManageHierarchy}
+          >
+            <DatabaseZap className="h-4 w-4" />
+            Add sample hierarchy
+          </button>
+        </div>
       </div>
 
       {error ? (

@@ -37,7 +37,7 @@ const plantSchema = new Schema<Plant>(
   {
     timestamps: true,
     toJSON: {
-      transform: (_document, ret) => {
+      transform: (_document, ret: Record<string, any>) => {
         ret.id = ret._id.toString();
         delete ret._id;
         delete ret.__v;

@@ -181,6 +181,10 @@ Test after completion:
 - [ ] View nested hierarchy as a tree.
 - [ ] Operator can view but not edit.
 
+Phase 3 verification notes:
+
+- [x] Added a `/hierarchy` sample action that creates a plant, building, department, and panel chain.
+
 ## Phase 4: Assets and Devices
 
 ### 4.1 Asset Backend
@@ -226,6 +230,18 @@ Test after completion:
 - [x] Manage devices from UI.
 - [x] Confirm filters and search work from UI.
 - [x] Confirm role restrictions in UI.
+
+Phase 4 verification notes:
+
+- [x] Restored `/devices` frontend route and sidebar navigation item.
+- [x] Restored standalone devices UI with existing-asset dropdown selection.
+- [x] Restored asset creation sample-data button.
+- [x] Replaced asset hierarchy ID text fields with existing plant, building, department, and panel dropdowns.
+- [x] `npm run typecheck` passed in `frontend/`.
+- [x] `npm run typecheck` passed in `backend/`.
+- [x] `npm run lint` passed in `frontend/` with existing warnings in auth and hierarchy files.
+- [x] `npm run build` passed in `frontend/`.
+- [x] `npm test` passed in `backend/` when rerun with socket/database permissions after sandbox blocked the first run.
 
 ### 4.4 Phase 4 Follow-up Questions
 

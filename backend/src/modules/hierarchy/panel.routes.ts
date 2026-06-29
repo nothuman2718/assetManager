@@ -101,13 +101,13 @@ panelsRouter.post(
 panelsRouter.get(
   '/:id',
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid panel id' });
       return;
     }
 
     const panel = await PanelModel.findOne({
-      _id: request.params.id,
+      _id: String(request.params.id),
       status: { $ne: 'deleted' },
     }).exec();
 
@@ -124,7 +124,7 @@ panelsRouter.patch(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid panel id' });
       return;
     }
@@ -160,7 +160,7 @@ panelsRouter.patch(
     }
 
     const panel = await PanelModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: updates },
       { new: true },
     ).exec();
@@ -178,13 +178,13 @@ panelsRouter.delete(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid panel id' });
       return;
     }
 
     const panel = await PanelModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: { status: 'deleted' } },
       { new: true },
     ).exec();

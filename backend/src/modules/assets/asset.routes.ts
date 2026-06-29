@@ -122,13 +122,13 @@ assetsRouter.post(
 assetsRouter.get(
   '/:id',
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid asset id' });
       return;
     }
 
     const asset = await AssetModel.findOne({
-      _id: request.params.id,
+      _id: String(request.params.id),
       status: { $ne: 'deleted' },
     }).exec();
 
@@ -145,7 +145,7 @@ assetsRouter.patch(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid asset id' });
       return;
     }
@@ -198,7 +198,7 @@ assetsRouter.patch(
     }
 
     const asset = await AssetModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: updates },
       { new: true },
     ).exec();
@@ -216,13 +216,13 @@ assetsRouter.delete(
   '/:id',
   requireRoles('Admin', 'Engineer'),
   asyncHandler(async (request, response) => {
-    if (!Types.ObjectId.isValid(request.params.id)) {
+    if (!Types.ObjectId.isValid(String(request.params.id))) {
       response.status(400).json({ message: 'Invalid asset id' });
       return;
     }
 
     const asset = await AssetModel.findOneAndUpdate(
-      { _id: request.params.id, status: { $ne: 'deleted' } },
+      { _id: String(request.params.id), status: { $ne: 'deleted' } },
       { $set: { status: 'deleted' } },
       { new: true },
     ).exec();
