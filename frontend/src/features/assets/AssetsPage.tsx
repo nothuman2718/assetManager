@@ -1,11 +1,11 @@
-import { Box, DatabaseZap, Plus, Search } from 'lucide-react'
+import { Box, DatabaseZap, Download, Plus, Search, Upload } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useAuth } from '../auth/AuthContext'
 import { hierarchyApi } from '../hierarchy/api'
 import type { PlantTree } from '../hierarchy/types'
-import { assetsApi } from './api'
+import { assetsApi, type ImportSummary } from './api'
 import type { Asset } from './types'
 
 type AssetForm = {
@@ -69,6 +69,7 @@ export const AssetsPage = () => {
   const [category, setCategory] = useState('')
   const [status, setStatus] = useState('')
   const [form, setForm] = useState<AssetForm>(initialForm)
+  const [importSummary, setImportSummary] = useState<ImportSummary | null>(null)
 
   const canManageAssets = user?.role !== 'Operator'
   const statusClasses: Record<string, string> = {
@@ -155,6 +156,33 @@ export const AssetsPage = () => {
     }
   }
 
+  const handleImportAssets = async (file: File | undefined) => {
+    if (!token || !file) {
+      return
+    }
+
+    try {
+      const csv = await file.text()
+      const summary = await assetsApi.importAssetsCsv(token, csv)
+      setImportSummary(summary)
+      await loadAssets()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to import assets')
+    }
+  }
+
+  const handleExportAssets = async () => {
+    if (!token) {
+      return
+    }
+
+    try {
+      await assetsApi.exportAssetsCsv(token, { category, status })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to export assets')
+    }
+  }
+
   return (
     <section className="space-y-6">
       <div className="rounded-lg border border-slate-200 bg-white p-7 shadow-sm">
@@ -178,10 +206,32 @@ export const AssetsPage = () => {
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-2">
-            <Box className="h-5 w-5 text-teal-700" />
-            <h2 className="text-xl font-semibold text-slate-900">Asset inventory</h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Box className="h-5 w-5 text-teal-700" />
+              <h2 className="text-xl font-semibold text-slate-900">Asset inventory</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <Upload className="h-4 w-4" />
+                Import CSV
+                <input className="sr-only" type="file" accept=".csv,text/csv" onChange={(event) => void handleImportAssets(event.target.files?.[0])} disabled={!canManageAssets} />
+              </label>
+              <button className="inline-flex min-h-10 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50" type="button" onClick={() => void handleExportAssets()}>
+                <Download className="h-4 w-4" />
+                Export CSV
+              </button>
+            </div>
           </div>
+
+          {importSummary ? (
+            <div className="mb-4 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+              <p className="font-semibold text-slate-900">Import result: {importSummary.successCount} saved, {importSummary.errorCount} errors</p>
+              {importSummary.results.filter((result) => !result.success).map((result) => (
+                <p className="mt-1" key={result.row}>Row {result.row}: {result.errors?.join(', ')}</p>
+              ))}
+            </div>
+          ) : null}
 
           <div className="mb-4 grid gap-3 md:grid-cols-3">
             <label className="flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm">

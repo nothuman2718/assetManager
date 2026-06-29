@@ -1,4 +1,5 @@
 import { Activity, LayoutDashboard, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { AppShell } from './app/AppShell'
@@ -9,9 +10,30 @@ import { AssetDetailPage } from './features/assets/AssetDetailPage'
 import { AssetsPage } from './features/assets/AssetsPage'
 import { DevicesPage } from './features/assets/DevicesPage'
 import { HierarchyPage } from './features/hierarchy/HierarchyPage'
+import { MaintenancePage } from './features/maintenance/MaintenancePage'
+import { maintenanceApi } from './features/maintenance/api'
 
 const DashboardPage = () => {
-  const { user } = useAuth()
+  const { token, user } = useAuth()
+  const [upcomingCount, setUpcomingCount] = useState(0)
+  const [overdueCount, setOverdueCount] = useState(0)
+
+  useEffect(() => {
+    if (!token) {
+      return
+    }
+
+    const loadMaintenanceSummary = async () => {
+      const [upcoming, overdue] = await Promise.all([
+        maintenanceApi.upcoming(token, 30),
+        maintenanceApi.overdue(token),
+      ])
+      setUpcomingCount(upcoming.length)
+      setOverdueCount(overdue.length)
+    }
+
+    void loadMaintenanceSummary()
+  }, [token])
 
   return (
     <section className="max-w-4xl rounded-lg border border-slate-200 bg-white p-7 shadow-sm">
@@ -27,10 +49,18 @@ const DashboardPage = () => {
         </div>
       </div>
       <p className="max-w-2xl leading-7 text-slate-600">
-        Authentication, localStorage JWT persistence, protected routes, and
-        role-aware navigation are active. The next phase can start building the
-        plant hierarchy.
+        Authentication, protected routes, hierarchy, assets, devices, and maintenance workflows are active.
       </p>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p className="text-sm font-semibold text-slate-500">Upcoming maintenance</p>
+          <p className="mt-2 text-3xl font-bold text-slate-950">{upcomingCount}</p>
+        </div>
+        <div className="rounded-lg border border-red-100 bg-red-50 p-4">
+          <p className="text-sm font-semibold text-red-700">Overdue maintenance</p>
+          <p className="mt-2 text-3xl font-bold text-red-700">{overdueCount}</p>
+        </div>
+      </div>
     </section>
   )
 }
@@ -88,6 +118,7 @@ function App() {
           <Route path="/assets" element={<AssetsPage />} />
           <Route path="/assets/:id" element={<AssetDetailPage />} />
           <Route path="/devices" element={<DevicesPage />} />
+          <Route path="/maintenance" element={<MaintenancePage />} />
         </Route>
       </Route>
     </Routes>

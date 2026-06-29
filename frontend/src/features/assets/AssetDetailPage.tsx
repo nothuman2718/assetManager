@@ -1,8 +1,10 @@
-import { Plus, RefreshCcw, Wrench } from 'lucide-react'
+import { CalendarClock, Plus, RefreshCcw, Wrench } from 'lucide-react'
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAuth } from '../auth/AuthContext'
+import { maintenanceApi } from '../maintenance/api'
+import type { MaintenanceRecord } from '../maintenance/types'
 import { assetsApi } from './api'
 import type { Asset } from './types'
 import type { Device } from './device-types'
@@ -18,14 +20,28 @@ const initialDeviceForm = {
   status: 'online' as const,
 }
 
+const initialMaintenanceForm = {
+  technician: '',
+  nextMaintenanceDate: '',
+  lastInspectionDate: '',
+  lastServiceDate: '',
+  warrantyUntil: '',
+  notes: '',
+  status: 'scheduled' as const,
+}
+
+const formatDate = (date?: string | null) => (date ? new Date(date).toLocaleDateString() : '-')
+
 export const AssetDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const { token, user } = useAuth()
   const [asset, setAsset] = useState<Asset | null>(null)
   const [devices, setDevices] = useState<Device[]>([])
+  const [maintenanceRecords, setMaintenanceRecords] = useState<MaintenanceRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deviceForm, setDeviceForm] = useState(initialDeviceForm)
+  const [maintenanceForm, setMaintenanceForm] = useState(initialMaintenanceForm)
 
   const canManageAssets = user?.role !== 'Operator'
   const statusClasses: Record<string, string> = {
@@ -46,8 +62,10 @@ export const AssetDetailPage = () => {
         assetsApi.getAsset(token, id),
         assetsApi.listDevices(token, { assetId: id }),
       ])
+      const maintenanceData = await maintenanceApi.list(token, { assetId: id })
       setAsset(assetData)
       setDevices(Array.isArray(deviceData) ? deviceData : [])
+      setMaintenanceRecords(Array.isArray(maintenanceData) ? maintenanceData : [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load asset details')
     } finally {
@@ -87,6 +105,24 @@ export const AssetDetailPage = () => {
       await loadAssetDetails()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update device status')
+    }
+  }
+
+  const handleCreateMaintenance = async (event: FormEvent) => {
+    event.preventDefault()
+    if (!token || !id) {
+      return
+    }
+
+    try {
+      await maintenanceApi.create(token, {
+        ...maintenanceForm,
+        assetId: id,
+      })
+      setMaintenanceForm(initialMaintenanceForm)
+      await loadAssetDetails()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create maintenance')
     }
   }
 
@@ -189,6 +225,63 @@ export const AssetDetailPage = () => {
               <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Polling interval" type="number" value={deviceForm.pollingInterval} onChange={(event) => setDeviceForm((current) => ({ ...current, pollingInterval: Number(event.target.value) }))} disabled={!canManageAssets} />
             </div>
             <button className="min-h-11 rounded-md bg-teal-700 px-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={!canManageAssets}>Save device</button>
+          </form>
+        </div>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center gap-2">
+            <CalendarClock className="h-5 w-5 text-teal-700" />
+            <h2 className="text-xl font-semibold text-slate-900">Maintenance history</h2>
+          </div>
+          <div className="space-y-3">
+            {maintenanceRecords.length === 0 ? (
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">No maintenance records for this asset yet.</div>
+            ) : maintenanceRecords.map((record) => (
+              <div key={record.id} className="rounded-lg border border-slate-200 p-3">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-slate-900">{record.technician}</p>
+                    <p className="text-sm text-slate-500">Next: {formatDate(record.nextMaintenanceDate)}</p>
+                  </div>
+                  <span className="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold uppercase text-teal-700">{record.status}</span>
+                </div>
+                <p className="mt-2 text-sm text-slate-600">Last service: {formatDate(record.lastServiceDate)} • Warranty: {formatDate(record.warrantyUntil)}</p>
+                {record.notes ? <p className="mt-2 text-sm text-slate-600">{record.notes}</p> : null}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          {!canManageAssets ? (
+            <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">Operators can review maintenance history here, but changes are disabled.</div>
+          ) : null}
+
+          <div className="mb-4 flex items-center gap-2">
+            <Plus className="h-5 w-5 text-teal-700" />
+            <h2 className="text-xl font-semibold text-slate-900">Add maintenance</h2>
+          </div>
+
+          <form className="grid gap-3" onSubmit={handleCreateMaintenance}>
+            <input className="rounded-md border border-slate-300 px-3 py-2" placeholder="Technician" value={maintenanceForm.technician} onChange={(event) => setMaintenanceForm((current) => ({ ...current, technician: event.target.value }))} disabled={!canManageAssets} />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="grid gap-1 text-xs font-semibold uppercase text-slate-500">
+                Next maintenance
+                <input className="rounded-md border border-slate-300 px-3 py-2 text-base font-normal normal-case text-slate-950" type="date" value={maintenanceForm.nextMaintenanceDate} onChange={(event) => setMaintenanceForm((current) => ({ ...current, nextMaintenanceDate: event.target.value }))} disabled={!canManageAssets} />
+              </label>
+              <label className="grid gap-1 text-xs font-semibold uppercase text-slate-500">
+                Last service
+                <input className="rounded-md border border-slate-300 px-3 py-2 text-base font-normal normal-case text-slate-950" type="date" value={maintenanceForm.lastServiceDate} onChange={(event) => setMaintenanceForm((current) => ({ ...current, lastServiceDate: event.target.value }))} disabled={!canManageAssets} />
+              </label>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input className="rounded-md border border-slate-300 px-3 py-2" type="date" value={maintenanceForm.lastInspectionDate} onChange={(event) => setMaintenanceForm((current) => ({ ...current, lastInspectionDate: event.target.value }))} disabled={!canManageAssets} />
+              <input className="rounded-md border border-slate-300 px-3 py-2" type="date" value={maintenanceForm.warrantyUntil} onChange={(event) => setMaintenanceForm((current) => ({ ...current, warrantyUntil: event.target.value }))} disabled={!canManageAssets} />
+            </div>
+            <textarea className="min-h-20 rounded-md border border-slate-300 px-3 py-2" placeholder="Notes" value={maintenanceForm.notes} onChange={(event) => setMaintenanceForm((current) => ({ ...current, notes: event.target.value }))} disabled={!canManageAssets} />
+            <button className="min-h-11 rounded-md bg-teal-700 px-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={!canManageAssets}>Save maintenance</button>
           </form>
         </div>
       </div>

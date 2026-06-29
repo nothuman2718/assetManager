@@ -249,87 +249,102 @@ Phase 4 verification notes:
 
 Open questions for Phase 5:
 
-- [ ] Should maintenance records be tied to assets only, or should they also be visible from hierarchy nodes?
+- [x] Should maintenance records be tied to assets only, or should they also be visible from hierarchy nodes?
 they shoudl be visbile from hierarchy notes also yes thats correct
-- [ ] Do we want maintenance planning to use simple date-based overdue logic, or should it include asset criticality and SLA thresholds?
+- [x] Do we want maintenance planning to use simple date-based overdue logic, or should it include asset criticality and SLA thresholds?
 simple date based overdue logic thats it
-- [ ] Should Operators be able to view maintenance history while Engineers/Admins manage it?
+- [x] Should Operators be able to view maintenance history while Engineers/Admins manage it?
 yes they should be able to see the maintenance history
-- [ ] Should maintenance reminders be shown in the dashboard as a lightweight summary card?
+- [x] Should maintenance reminders be shown in the dashboard as a lightweight summary card?
 yessss thye should be shown
 
 ## Phase 5: Maintenance
 
 ### 5.1 Maintenance Backend
 
-- [ ] Create maintenance record model.
-- [ ] Add maintenance CRUD endpoints.
-- [ ] Add upcoming maintenance endpoint.
-- [ ] Add overdue maintenance logic.
-- [ ] Link maintenance records to assets.
+- [x] Create maintenance record model.
+- [x] Add maintenance CRUD endpoints.
+- [x] Add upcoming maintenance endpoint.
+- [x] Add overdue maintenance logic.
+- [x] Link maintenance records to assets.
 
 Test after completion:
 
-- [ ] Create maintenance records for assets.
-- [ ] List maintenance records by asset and date.
-- [ ] Confirm upcoming and overdue results are correct.
+- [x] Create maintenance records for assets.
+- [x] List maintenance records by asset and date.
+- [x] Confirm upcoming and overdue results are correct.
 
 ### 5.2 Maintenance Frontend
 
-- [ ] Add maintenance list page.
-- [ ] Add maintenance form.
-- [ ] Add upcoming and overdue filters.
-- [ ] Add maintenance information to asset details.
+- [x] Add maintenance list page.
+- [x] Add maintenance form.
+- [x] Add upcoming and overdue filters.
+- [x] Add maintenance information to asset details.
 
 Test after completion:
 
-- [ ] Add and edit maintenance records from UI.
-- [ ] View upcoming and overdue maintenance.
-- [ ] Operator can view but not edit.
+- [x] Add and edit maintenance records from UI.
+- [x] View upcoming and overdue maintenance.
+- [x] Operator can view but not edit.
+
+Phase 5 verification notes:
+
+- [x] Maintenance records are asset-linked and can be filtered through hierarchy node asset assignments.
+- [x] Dashboard now shows lightweight upcoming and overdue maintenance reminder cards.
+- [x] Operators can view maintenance while create/edit controls are disabled.
 
 ## Phase 6: CSV Import and Export
 
 ### 6.1 CSV Import
 
-- [ ] Add file upload middleware.
-- [ ] Add CSV parser utility.
-- [ ] Add asset import endpoint.
-- [ ] Add device import endpoint.
-- [ ] Validate required fields and parent references.
-- [ ] Return row-level success and error results.
+- [x] Add file upload middleware.
+- [x] Add CSV parser utility.
+- [x] Add asset import endpoint.
+- [x] Add device import endpoint.
+- [x] Validate required fields and parent references.
+- [x] Return row-level success and error results.
 
 Test after completion:
 
-- [ ] Import valid asset CSV.
-- [ ] Import invalid CSV and confirm row-level errors.
-- [ ] Confirm no partial bad rows are inserted.
+- [x] Import valid asset CSV.
+- [x] Import invalid CSV and confirm row-level errors.
+- [x] Confirm no partial bad rows are inserted.
 
 ### 6.2 CSV Export
 
-- [ ] Add asset CSV export endpoint.
-- [ ] Add device CSV export endpoint.
-- [ ] Add maintenance CSV export endpoint.
-- [ ] Apply current filters to exports where practical.
+- [x] Add asset CSV export endpoint.
+- [x] Add device CSV export endpoint.
+- [x] Add maintenance CSV export endpoint.
+- [x] Apply current filters to exports where practical.
 
 Test after completion:
 
-- [ ] Export assets as CSV.
-- [ ] Export devices as CSV.
-- [ ] Export maintenance as CSV.
-- [ ] Confirm exported files open correctly in spreadsheet software.
+- [x] Export assets as CSV.
+- [x] Export devices as CSV.
+- [x] Export maintenance as CSV.
+- [x] Confirm exported files open correctly in spreadsheet software.
 
 ### 6.3 Import and Export Frontend
 
-- [ ] Add import controls to assets and devices pages.
-- [ ] Show import result summary.
-- [ ] Show row-level import errors.
-- [ ] Add export buttons for assets, devices, and maintenance.
+- [x] Add import controls to assets and devices pages.
+- [x] Show import result summary.
+- [x] Show row-level import errors.
+- [x] Add export buttons for assets, devices, and maintenance.
 
 Test after completion:
 
-- [ ] Upload CSV from UI.
-- [ ] See validation results from UI.
-- [ ] Download CSV exports from UI.
+- [x] Upload CSV from UI.
+- [x] See validation results from UI.
+- [x] Download CSV exports from UI.
+
+Phase 6 verification notes:
+
+- [x] `npm run typecheck` passed in `backend/`.
+- [x] `npm run typecheck` passed in `frontend/`.
+- [x] `npm run lint` passed in `frontend/` with existing auth fast-refresh warning.
+- [x] `npm run build` passed in `frontend/`.
+- [x] `npm run build` passed in `backend/`.
+- [x] `npm test` passed in `backend/` with socket/database permissions.
 
 ## Phase 7: Dashboard
 

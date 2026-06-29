@@ -1,10 +1,24 @@
-import { apiRequest } from '../../services/api'
+import { apiRequest, apiTextRequest, downloadCsv } from '../../services/api'
 import type { Asset } from './types'
 import type { Device } from './device-types'
 
 type AssetListResponse = Asset[]
 
 type DeviceListResponse = Device[]
+
+export type ImportRowResult = {
+  row: number
+  success: boolean
+  id?: string
+  errors?: string[]
+}
+
+export type ImportSummary = {
+  totalRows: number
+  successCount: number
+  errorCount: number
+  results: ImportRowResult[]
+}
 
 const buildAuthHeaders = (token: string | null) => ({ token })
 
@@ -37,6 +51,21 @@ export const assetsApi = {
       body: JSON.stringify(removeBlankValues(asset)),
       ...buildAuthHeaders(token),
     }),
+  importAssetsCsv: (token: string | null, csv: string) =>
+    apiTextRequest<ImportSummary>('/imports/assets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/csv' },
+      body: csv,
+      ...buildAuthHeaders(token),
+    }),
+  exportAssetsCsv: (token: string | null, params?: { category?: string; status?: string }) => {
+    const query = new URLSearchParams()
+
+    if (params?.category) query.set('category', params.category)
+    if (params?.status) query.set('status', params.status)
+
+    return downloadCsv(token, `/exports/assets.csv${query.toString() ? `?${query.toString()}` : ''}`, 'assets.csv')
+  },
   getAsset: (token: string | null, id: string) => apiRequest<Asset>(`/assets/${id}`, buildAuthHeaders(token)),
   listDevices: (
     token: string | null,
@@ -68,6 +97,22 @@ export const assetsApi = {
       body: JSON.stringify(removeBlankValues(device)),
       ...buildAuthHeaders(token),
     }),
+  importDevicesCsv: (token: string | null, csv: string) =>
+    apiTextRequest<ImportSummary>('/imports/devices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/csv' },
+      body: csv,
+      ...buildAuthHeaders(token),
+    }),
+  exportDevicesCsv: (token: string | null, params?: { assetId?: string; status?: string; protocol?: string }) => {
+    const query = new URLSearchParams()
+
+    if (params?.assetId) query.set('assetId', params.assetId)
+    if (params?.status) query.set('status', params.status)
+    if (params?.protocol) query.set('protocol', params.protocol)
+
+    return downloadCsv(token, `/exports/devices.csv${query.toString() ? `?${query.toString()}` : ''}`, 'devices.csv')
+  },
   simulateDeviceStatus: (token: string | null, deviceId: string) =>
     apiRequest<Device>(`/devices/${deviceId}/simulate-status`, {
       method: 'POST',
