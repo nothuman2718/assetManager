@@ -83,57 +83,57 @@ Phase 1 verification notes:
 
 ### 2.1 User Model and Seed
 
-- [ ] Create user schema with name, email, password hash, role, status, and last login fields.
-- [ ] Add role enum: Admin, Engineer, Operator.
-- [ ] Add password hashing utility.
-- [ ] Add first Admin creation flow based on the answered doubt.
+- [x] Create user schema with name, email, password hash, role, status, and last login fields.
+- [x] Add role enum: Admin, Engineer, Operator.
+- [x] Add password hashing utility.
+- [x] Add first Admin creation flow based on the answered doubt.
 
 Test after completion:
 
-- [ ] Confirm duplicate emails are rejected.
-- [ ] Confirm passwords are stored hashed.
-- [ ] Confirm an Admin user can be created.
+- [x] Confirm duplicate emails are rejected.
+- [x] Confirm passwords are stored hashed.
+- [x] Confirm an Admin user can be created.
 
 ### 2.2 Authentication API
 
-- [ ] Implement login endpoint.
-- [ ] Implement current-user endpoint.
-- [ ] Implement logout response behavior if needed for frontend flow.
-- [ ] Add JWT signing and verification.
+- [x] Implement login endpoint.
+- [x] Implement current-user endpoint.
+- [x] Implement logout response behavior if needed for frontend flow.
+- [x] Add JWT signing and verification.
 
 Test after completion:
 
-- [ ] Login succeeds with valid credentials.
-- [ ] Login fails with invalid credentials.
-- [ ] Current-user endpoint works only with a valid token.
+- [x] Login succeeds with valid credentials.
+- [x] Login fails with invalid credentials.
+- [x] Current-user endpoint works only with a valid token.
 
 ### 2.3 Authorization Middleware
 
-- [ ] Add authentication middleware.
-- [ ] Add role-based middleware.
-- [ ] Add consistent unauthorized and forbidden errors.
-- [ ] Protect user management routes.
+- [x] Add authentication middleware.
+- [x] Add role-based middleware.
+- [x] Add consistent unauthorized and forbidden errors.
+- [x] Protect user management routes.
 
 Test after completion:
 
-- [ ] Anonymous users cannot access protected routes.
-- [ ] Operator cannot perform Admin-only actions.
-- [ ] Admin can perform Admin-only actions.
+- [x] Anonymous users cannot access protected routes.
+- [x] Operator cannot perform Admin-only actions.
+- [x] Admin can perform Admin-only actions.
 
 ### 2.4 Frontend Auth Flow
 
-- [ ] Add login page.
-- [ ] Add auth service.
-- [ ] Add auth state handling.
-- [ ] Add protected route wrapper.
-- [ ] Add role-aware navigation placeholders.
+- [x] Add login page.
+- [x] Add auth service.
+- [x] Add auth state handling.
+- [x] Add protected route wrapper.
+- [x] Add role-aware navigation placeholders.
 
 Test after completion:
 
-- [ ] Login redirects to dashboard.
-- [ ] Refresh keeps the user authenticated when token is valid.
-- [ ] Logout clears auth state.
-- [ ] Protected pages redirect anonymous users to login.
+- [x] Login redirects to dashboard.
+- [x] Refresh keeps the user authenticated when token is valid.
+- [x] Logout clears auth state.
+- [x] Protected pages redirect anonymous users to login.
 
 ## Phase 3: Plant Hierarchy
 
@@ -446,5 +446,10 @@ Test after completion:
 ## Codex Doubts Before Phase 2
 
 - Should the Phase 2 seed run automatically every server start in development, or only when a seed script is executed?
+every server start in development
 - Should JWT be stored in localStorage for simplicity, or should we use httpOnly cookies for better security?
+just localstorage, remember i just want a simple application for now
 - What default seed login should we use for Admin, Engineer, and Operator test users?
+create a seed management folder may be like in jsons which gets bootstrapped, and see login anything that works and will work for demo thats it, you have freedom to choose anything
+
+i have also fixed the docker compose and have verified also it is working.

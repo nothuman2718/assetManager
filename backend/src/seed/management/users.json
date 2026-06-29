@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Demo Admin",
+    "email": "admin@ems.local",
+    "password": "Admin@123",
+    "role": "Admin",
+    "status": "active"
+  },
+  {
+    "name": "Demo Engineer",
+    "email": "engineer@ems.local",
+    "password": "Engineer@123",
+    "role": "Engineer",
+    "status": "active"
+  },
+  {
+    "name": "Demo Operator",
+    "email": "operator@ems.local",
+    "password": "Operator@123",
+    "role": "Operator",
+    "status": "active"
+  }
+]

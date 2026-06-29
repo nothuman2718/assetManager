@@ -18,4 +18,7 @@ export const env = {
   clientOrigin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
   mongodbUri:
     process.env.MONGODB_URI ?? 'mongodb://localhost:27017/ems_asset_registry',
+  jwtSecret:
+    process.env.JWT_SECRET ?? 'development-only-change-this-secret-before-prod',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '1d',
 };
