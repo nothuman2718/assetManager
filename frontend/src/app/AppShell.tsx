@@ -1,4 +1,4 @@
-import { Boxes, LayoutDashboard, LogOut, ShieldCheck, Users } from 'lucide-react'
+import { Boxes, LayoutDashboard, LogOut, ShieldCheck, Trees, Users } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 
 import { useAuth } from '../features/auth/AuthContext'
@@ -8,6 +8,7 @@ export const AppShell = () => {
 
   const navItems = [
     { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
+    { label: 'Hierarchy', to: '/hierarchy', icon: Trees },
     { label: 'API Health', to: '/health', icon: ShieldCheck },
     ...(user?.role === 'Admin'
       ? [{ label: 'Users', to: '/users', icon: Users }]

@@ -139,32 +139,32 @@ Test after completion:
 
 ### 3.1 Backend Hierarchy Models
 
-- [ ] Create plant model.
-- [ ] Create building model.
-- [ ] Create department model.
-- [ ] Create panel model.
-- [ ] Add references between hierarchy levels.
-- [ ] Add indexes for parent relationships and codes.
+- [x] Create plant model.
+- [x] Create building model.
+- [x] Create department model.
+- [x] Create panel model.
+- [x] Add references between hierarchy levels.
+- [x] Add indexes for parent relationships and codes.
 
 Test after completion:
 
-- [ ] Create a plant, building, department, and panel through API tests or API client.
-- [ ] Confirm child records require valid parent records.
-- [ ] Confirm duplicate codes are handled within the correct parent scope.
+- [x] Create a plant, building, department, and panel through API tests or API client.
+- [x] Confirm child records require valid parent records.
+- [x] Confirm duplicate codes are handled within the correct parent scope.
 
 ### 3.2 Hierarchy APIs
 
-- [ ] Add CRUD endpoints for plants.
-- [ ] Add CRUD endpoints for buildings.
-- [ ] Add CRUD endpoints for departments.
-- [ ] Add CRUD endpoints for panels.
-- [ ] Add tree endpoint for a full plant hierarchy.
+- [x] Add CRUD endpoints for plants.
+- [x] Add CRUD endpoints for buildings.
+- [x] Add CRUD endpoints for departments.
+- [x] Add CRUD endpoints for panels.
+- [x] Add tree endpoint for a full plant hierarchy.
 
 Test after completion:
 
-- [ ] List endpoints support pagination and search where useful.
-- [ ] Tree endpoint returns nested plant, buildings, departments, and panels.
-- [ ] Role permissions match requirements.
+- [x] List endpoints support pagination and search where useful.
+- [x] Tree endpoint returns nested plant, buildings, departments, and panels.
+- [x] Role permissions match requirements.
 
 ### 3.3 Frontend Hierarchy Screens
 
@@ -434,6 +434,15 @@ Test after completion:
 - [ ] Add maintenance.
 - [ ] Import and export CSV.
 - [ ] View dashboard and hierarchy tree.
+
+## Phase 3 Implementation Notes and Doubts
+
+- Should the hierarchy tree be exposed as a single `/api/hierarchy/tree` endpoint, or would you prefer separate tree endpoints per level for easier frontend consumption?
+seperate tree end points would be good
+- For the initial v1 scope, should Operators be allowed to view hierarchy data but not create or edit it, or should they be completely blocked from all management actions?
+opertors can view that it, not create or edit it, they shoukd not be blocked
+- Would you like the frontend hierarchy views to use the same list/detail/create/edit pattern as the rest of the app, or should the first pass be a simpler tree-focused screen with inline create forms?
+as rest of the app, but tree focused screen will be good
 
 ## Resolved Decisions
 

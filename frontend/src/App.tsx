@@ -5,6 +5,7 @@ import { AppShell } from './app/AppShell'
 import { LoginPage } from './features/auth/LoginPage'
 import { ProtectedRoute } from './features/auth/ProtectedRoute'
 import { useAuth } from './features/auth/AuthContext'
+import { HierarchyPage } from './features/hierarchy/HierarchyPage'
 
 const DashboardPage = () => {
   const { user } = useAuth()
@@ -80,6 +81,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/health" element={<HealthPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/hierarchy" element={<HierarchyPage />} />
         </Route>
       </Route>
     </Routes>

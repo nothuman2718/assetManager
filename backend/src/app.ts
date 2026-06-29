@@ -5,6 +5,11 @@ import morgan from 'morgan';
 
 import { authRouter } from './modules/auth/auth.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
+import { buildingsRouter } from './modules/hierarchy/building.routes.js';
+import { departmentsRouter } from './modules/hierarchy/department.routes.js';
+import { panelsRouter } from './modules/hierarchy/panel.routes.js';
+import { plantsRouter } from './modules/hierarchy/plant.routes.js';
+import { hierarchyTreeRouter } from './modules/hierarchy/tree.routes.js';
 import { usersRouter } from './modules/users/user.routes.js';
 import { env } from './shared/config/env.js';
 import { errorMiddleware } from './shared/middleware/error.middleware.js';
@@ -32,6 +37,11 @@ export const createApp = () => {
   app.use('/api/health', healthRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/users', usersRouter);
+  app.use('/api/plants', plantsRouter);
+  app.use('/api/buildings', buildingsRouter);
+  app.use('/api/departments', departmentsRouter);
+  app.use('/api/panels', panelsRouter);
+  app.use('/api/hierarchy', hierarchyTreeRouter);
 
   app.use((_request, response) => {
     response.status(404).json({
